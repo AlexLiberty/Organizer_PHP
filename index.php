@@ -7,26 +7,27 @@ $organizer = new Organizer();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST')
 {
-    $action = $_POST['action'];
-    $date = $_POST['date'];
-    $task = $_POST['task'];
+    $action = isset($_POST['action']) ? $_POST['action'] : null;
+    $date = isset($_POST['date']) ? $_POST['date'] : null;
+    $task = isset($_POST['task']) ? $_POST['task'] : null;
 
-    if ($action === 'add')
+    if ($action === 'add' && $date && $task)
     {
         $organizer->addTask($date, $task);
     }
-    elseif ($action === 'edit')
+    elseif ($action === 'edit' && $date && $task && isset($_POST['oldTask']))
     {
         $oldTask = $_POST['oldTask'];
         $organizer->editTask($date, $oldTask, $task);
     }
-    elseif ($action === 'remove')
+    elseif ($action === 'remove' && $date && $task)
     {
         $organizer->removeTask($date, $task);
     }
 }
 
-$tasks = $organizer->getTasks();
+$sortOption = isset($_POST['sort']) ? $_POST['sort'] : 'all';
+$tasks = $organizer->getFilteredTasks($sortOption);
 ?>
 
 <!DOCTYPE html>
@@ -47,6 +48,15 @@ $tasks = $organizer->getTasks();
         <label for="task">Задача:</label>
         <input type="text" name="task" required>
         <button type="submit">Додати задачу</button>
+    </form>
+
+    <form action="" method="POST">
+        <label>Сортувати по:</label>
+        <label><input type="radio" name="sort" value="today" <?php if ($sortOption === 'today') echo 'checked'; ?>> Сьогодні</label>
+        <label><input type="radio" name="sort" value="week" <?php if ($sortOption === 'week') echo 'checked'; ?>> За тиждень</label>
+        <label><input type="radio" name="sort" value="month" <?php if ($sortOption === 'month') echo 'checked'; ?>> За місяць</label>
+        <label><input type="radio" name="sort" value="all" <?php if ($sortOption === 'all') echo 'checked'; ?>> Показати всі</label>
+        <button type="submit">Застосувати</button>
     </form>
 
     <h2>Список задач</h2>

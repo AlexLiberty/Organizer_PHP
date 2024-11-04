@@ -45,9 +45,35 @@ class Organizer
             }
         }
     }
-    public function getTasks()
+    public function getFilteredTasks($filter = 'all')
     {
-        return $_SESSION['tasks'];
+        $tasks = $_SESSION['tasks'];
+        $filteredTasks = [];
+
+        $today = date('Y-m-d');
+        $weekAgo = date('Y-m-d', strtotime('-1 week'));
+        $monthAgo = date('Y-m-d', strtotime('-1 month'));
+
+        foreach ($tasks as $date => $taskList)
+        {
+            if ($filter === 'today' && $date === $today)
+            {
+                $filteredTasks[$date] = $taskList;
+            }
+            elseif ($filter === 'week' && $date >= $weekAgo)
+            {
+                $filteredTasks[$date] = $taskList;
+            }
+            elseif ($filter === 'month' && $date >= $monthAgo)
+            {
+                $filteredTasks[$date] = $taskList;
+            }
+            elseif ($filter === 'all')
+            {
+                $filteredTasks[$date] = $taskList;
+            }
+        }
+
+        return $filteredTasks;
     }
 }
-?>
